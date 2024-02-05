@@ -7,10 +7,27 @@ state = {
 };
 const partyList = document.querySelector("#parties");
 const addPartyForm = document.querySelector("#addParty");
-addPartyForm.addEventListener("submit", addParty);
 
-function addParty(event) {
+
+async function addParty(event) {
     event.preventDefault();
+    try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({
+            name: addPartyForm.name.value,
+            description: addPartyForm.description.value,
+            date: addPartyForm.date.value,
+            location: addPartyForm.location.value
+          })
+        });
+        if(!response.ok)
+          throw new Error("Failed to create party");
+        render();
+      } catch (error) {
+        console.error(error);
+      }
 }
 
 function deleteParty() {
@@ -50,6 +67,7 @@ async function render() {
     await getParties();
     renderParties();
 }
-render();
 
+render();
+addPartyForm.addEventListener("submit", addParty);
 
