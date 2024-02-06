@@ -7,6 +7,7 @@ state = {
 };
 const partyList = document.querySelector("#parties");
 const addPartyForm = document.querySelector("#addParty");
+const del = document.querySelector(".deleteBTN");
 
 
 async function addParty(event) {
@@ -31,8 +32,17 @@ async function addParty(event) {
       }
 }
 
-function deleteParty() {
-
+async function deleteParty(id) {
+  try {
+    const response = await fetch(API_URL+`/${id}`, {
+      method: "DELETE"
+    });
+    if(!response.ok)
+          throw new Error("Failed to delete party");
+        render();
+  } catch (error){
+    console.error(error);
+  }
 }
 
 async function getParties() {
@@ -47,7 +57,7 @@ async function getParties() {
 
 function renderParties() {
     if (!state.parties.length) {
-        partyList.innerHTML = "<li>No artists.</li>";
+        partyList.innerHTML = "<li>No Parties.</li>";
         return;
       }
     
@@ -58,7 +68,11 @@ function renderParties() {
           <p>${party.description}</p>
           <p>${party.date}</p>
           <p>${party.location}</p>
+          <button>Delete</button>
         `;
+        
+        const deleteButton = li.querySelector("button")
+        deleteButton.addEventListener("click", () => deleteParty(party.id));
         return li;
       });
       partyList.replaceChildren(...$parties);
@@ -71,4 +85,5 @@ async function render() {
 
 render();
 addPartyForm.addEventListener("submit", addParty);
+
 
