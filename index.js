@@ -12,13 +12,14 @@ const addPartyForm = document.querySelector("#addParty");
 async function addParty(event) {
     event.preventDefault();
     try {
+        const date = new Date(addPartyForm.date.value).toISOString();
         const response = await fetch(API_URL, {
           method: "POST",
           headers: {"Content-Type": "application/json"},
           body: JSON.stringify({
             name: addPartyForm.name.value,
             description: addPartyForm.description.value,
-            date: addPartyForm.date.value,
+            date: date,
             location: addPartyForm.location.value
           })
         });
