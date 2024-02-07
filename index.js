@@ -3,11 +3,26 @@ const API_URL = `https://fsa-crud-2aa9294fe819.herokuapp.com/api/${COHORT}/event
 
 
 state = {
-    parties: []
+    parties: [],
+    selectedParty: null
 };
 const partyList = document.querySelector("#parties");
 const addPartyForm = document.querySelector("#addParty");
 const del = document.querySelector(".deleteBTN");
+
+
+
+function setParty(party) {
+  state.selectedParty = party;
+  location.hash = party.id;
+}
+
+function hashParty() {
+  const id = +location.hash.slice(1);
+  state.selectedParty = state.parties.find(party => id === party.id);
+}
+
+
 
 
 async function addParty(event) {
@@ -65,25 +80,41 @@ function renderParties() {
         const li = document.createElement("li");
         li.innerHTML = `
           <h2>${party.name}</h2>
-          <p>${party.description}</p>
-          <p>${party.date}</p>
-          <p>${party.location}</p>
           <button>Delete</button>
         `;
-        
-        const deleteButton = li.querySelector("button")
+        const deleteButton = li.querySelector("button");
         deleteButton.addEventListener("click", () => deleteParty(party.id));
+        li.addEventListener("click", (_event) => {
+          setParty(party);
+          renderSelected();
+        });
         return li;
       });
       partyList.replaceChildren(...$parties);
 }
 
+function renderSelected() {
+  const selected = document.querySelector("article.selected_party");
+  if(!state.parties.includes(state.selectedParty)){
+    selected.innerHTML = ``;
+    return;
+  }
+  selected.innerHTML = `
+    <h2>${state.selectedParty.name}</h2
+    <h2>${state.selectedParty.name}</h2>
+    <p>${state.selectedParty.description}</p>
+    <p>${state.selectedParty.date}</p>
+    <p>${state.selectedParty.location}</p>
+    `;
+}
+
 async function render() {
     await getParties();
     renderParties();
+    hashParty();
+    renderSelected();
 }
 
 render();
 addPartyForm.addEventListener("submit", addParty);
-
 
